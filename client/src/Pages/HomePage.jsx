@@ -5,9 +5,11 @@ import axios from "axios";
 import { Checkbox, Radio } from "antd";
 import { Prices } from "../Components/Prices";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/cart";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [cart, setCart] = useCart();
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -20,7 +22,7 @@ const HomePage = () => {
       const res = await axios.get("/api/v1/category/getAll-categories");
       // const res = await axios.get("/api/v1/category/getAll-categories", {timeout:5000});
       if (res && res.data?.success) {
-        console.log(res.data?.data)
+        console.log(res.data?.data);
         setCategories(res.data?.data);
       }
     } catch (error) {
@@ -92,7 +94,7 @@ const HomePage = () => {
     <Layout>
       <div className="container mt-4">
         <div className="row">
-          <div className="col-md-2" >
+          <div className="col-md-2">
             <h4 className="text-center mt-3">Filter By Category</h4>
             <div className="d-flex flex-column">
               {categories.map((c) => (
@@ -104,7 +106,7 @@ const HomePage = () => {
                 </Checkbox>
               ))}
             </div>
-            <h4 className="text-center mt-4">Filter By Price</h4> 
+            <h4 className="text-center mt-4">Filter By Price</h4>
             <div className="d-flex flex-column">
               <Radio.Group onChange={(e) => setRadio(e.target.value)}>
                 {Prices?.map((p) => (
@@ -123,7 +125,7 @@ const HomePage = () => {
               </button>
             </div>
           </div>
-          <div className="col-md-10" >
+          <div className="col-md-10">
             <h1 className="text-center">All Products</h1>
             <div className="row mt-4">
               {products.map((p) => (
@@ -146,7 +148,17 @@ const HomePage = () => {
                       >
                         More Details
                       </button>
-                      <button className="btn btn-secondary ms-2">
+                      <button
+                        className="btn btn-secondary ms-2"
+                        onClick={() => {
+                          setCart([...cart, p]);
+                          localStorage.setItem(
+                            "cart",
+                            JSON.stringify([...cart, p])
+                          );
+                          toast.success("Item Added to Cart");
+                        }}
+                      >
                         Add to cart
                       </button>
                     </div>
